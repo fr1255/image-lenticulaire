@@ -7,77 +7,93 @@
   <style>
     body, select, input, button {
       font-family: Arial, sans-serif;
-      font-size: 16px;
+      font-size: 18px;
     }
-    body { padding: 20px; background: #f4f4f4; }
-    .container { display: flex; gap: 20px; }
-    .left, .right { flex: 1; }
-    canvas { background: white; border: 1px solid #333; display: block; margin-top: 20px; width: 100%; }
+    body {
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    label {
+      display: block;
+      margin-bottom: 12px;
+    }
+    canvas {
+      background: white;
+      border: 1px solid #333;
+      display: block;
+      margin-top: 30px;
+      width: 100%;
+      max-width: 1000px;
+    }
   </style>
 </head>
 <body>
-  <h1>Générateur d’image lenticulaire</h1>
-
-  <div class="container">
-    <div class="left">
-      <label>Image 1 :
-        <input type="file" id="image1" accept=".png,.jpg,.jpeg,.gif,.bmp,.webp">
-      </label><br><br>
-
-      <label>Image 2 :
-        <input type="file" id="image2" accept=".png,.jpg,.jpeg,.gif,.bmp,.webp">
-      </label><br><br>
-
-      <label>Format :
-        <select id="format">
-          <option value="A4" selected>A4 (210x297 mm)</option>
-          <option value="A3">A3 (297x420 mm)</option>
-          <option value="A5">A5 (148x210 mm)</option>
-          <option value="Custom">Libre</option>
-        </select>
-      </label><br><br>
-
-      <label>Orientation :
-        <select id="orientation">
-          <option value="portrait" selected>Portrait</option>
-          <option value="landscape">Paysage</option>
-        </select>
-      </label><br><br>
-
-      <label>Largeur (mm) :
-        <input type="number" id="manualWidth" value="210">
-      </label><br><br>
-
-      <label>Hauteur (mm) :
-        <input type="number" id="manualHeight" value="297">
-      </label><br><br>
-
-      <label>Unités :
-        <select id="unit">
-          <option value="mm" selected>Millimètres</option>
-          <option value="px">Pixels</option>
-        </select>
-      </label><br><br>
-
-      <label>Nombre de bandes :
-        <input type="number" id="lines" value="20" min="2" max="200">
-      </label><br><br>
-
-      <label>Format d’export :
-        <select id="exportFormat">
-          <option value="png" selected>PNG</option>
-          <option value="jpeg">JPEG</option>
-          <option value="webp">WebP</option>
-        </select>
-      </label><br><br>
-
-      <button onclick="download()">Télécharger l’image</button>
-    </div>
-
-    <div class="right">
-      <canvas id="result" width="800" height="600"></canvas>
-    </div>
+  
+  
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h1 style="margin: 0;">Générateur d’image lenticulaire</h1>
+    <p style="margin: 0; font-weight: bold;">Auteur : René Hippert</p>
   </div>
+  <p><strong>Projet :</strong> Autoportrait (parcours en Y)</p>
+<br>
+    
+
+  <div>
+    <label>Image 1 :
+      <input type="file" id="image1" accept=".png,.jpg,.jpeg,.gif,.bmp,.webp">
+    </label>
+
+    <label>Image 2 :
+      <input type="file" id="image2" accept=".png,.jpg,.jpeg,.gif,.bmp,.webp">
+    </label>
+
+    <label>Format :
+      <select id="format">
+        <option value="A4" selected>A4 (210x297 mm)</option>
+        <option value="A3">A3 (297x420 mm)</option>
+        <option value="A5">A5 (148x210 mm)</option>
+        <option value="Custom">Libre</option>
+      </select>
+    </label>
+
+    <label>Orientation :
+      <select id="orientation">
+        <option value="portrait" selected>Portrait</option>
+        <option value="landscape">Paysage</option>
+      </select>
+    </label>
+
+    <label>Largeur (mm) :
+      <input type="number" id="manualWidth" value="210">
+    </label>
+
+    <label>Hauteur (mm) :
+      <input type="number" id="manualHeight" value="297">
+    </label>
+
+    <label>Unités :
+      <select id="unit">
+        <option value="mm" selected>Millimètres</option>
+        <option value="px">Pixels</option>
+      </select>
+    </label>
+
+    <label>Nombre de bandes :
+      <input type="number" id="lines" value="20" min="2" max="200">
+    </label>
+
+    <label>Format d’export :
+      <select id="exportFormat">
+        <option value="png" selected>PNG</option>
+        <option value="jpeg">JPEG</option>
+        <option value="webp">WebP</option>
+      </select>
+    </label>
+
+    <button onclick="download()">Télécharger l’image</button>
+  </div>
+
+  <canvas id="result" width="800" height="600"></canvas>
 
   <script>
     let img1 = null, img2 = null;
