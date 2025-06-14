@@ -1,0 +1,20 @@
+{
+  "name": "Image Lenticulaire",
+  "short_name": "Lenticulaire",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "logo_app_icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon_lenticulaire.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    }
+  ]
+}
