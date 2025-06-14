@@ -2,94 +2,129 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Générateur d’image lenticulaire</title>
   <style>
-    body, select, input, button {
-      font-family: Arial, sans-serif;
-      font-size: 20px;
-    }
     body {
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      margin: 0;
       padding: 20px;
       background: #f4f4f4;
     }
-    label {
-      display: block;
-      margin-bottom: 12px;
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
     }
+
+    header h1 {
+      margin: 0;
+    }
+
+    header .author {
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .project {
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 500px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input, select, button {
+      padding: 8px;
+      font-size: 18px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
     canvas {
-      background: white;
-      border: 1px solid #333;
       display: block;
       margin-top: 30px;
-      width: 100%;
-      max-width: 1000px;
+      background: white;
+      border: 1px solid #333;
+      max-width: 100%;
+      height: auto;
     }
   </style>
 </head>
 <body>
-  
-  
-  <div style="display: flex; justify-content: space-between; align-items: center;">
-    <h1 style="margin: 0;">Générateur d’image lenticulaire</h1>
-    <p style="margin: 0; font-weight: bold;">Auteur : René Hippert</p>
-  </div>
-  <p><strong>Projet :</strong> Autoportrait (parcours en Y)</p>
-<br>
-    
 
-  <div>
-    <label>Image 1 :
-      <input type="file" id="image1" accept=".png,.jpg,.jpeg,.gif,.bmp,.webp">
-    </label>
+  <header>
+    <h1>Générateur d’image lenticulaire</h1>
+    <div class="author">Auteur : René Hippert</div>
+  </header>
+  <div class="project"><strong>Projet :</strong> Autoportrait (parcours en Y)</div>
 
-    <label>Image 2 :
-      <input type="file" id="image2" accept=".png,.jpg,.jpeg,.gif,.bmp,.webp">
-    </label>
+  <div class="form-group">
+    <label for="image1">Image 1 :</label>
+    <input type="file" id="image1" accept=".png,.jpg,.jpeg,.gif,.bmp,.webp">
 
-    <label>Format :
-      <select id="format">
-        <option value="A4" selected>A4 (210x297 mm)</option>
-        <option value="A3">A3 (297x420 mm)</option>
-        <option value="A5">A5 (148x210 mm)</option>
-        <option value="Custom">Libre</option>
-      </select>
-    </label>
+    <label for="image2">Image 2 :</label>
+    <input type="file" id="image2" accept=".png,.jpg,.jpeg,.gif,.bmp,.webp">
 
-    <label>Orientation :
-      <select id="orientation">
-        <option value="portrait" selected>Portrait</option>
-        <option value="landscape">Paysage</option>
-      </select>
-    </label>
+    <label for="format">Format :</label>
+    <select id="format">
+      <option value="A4" selected>A4 (210x297 mm)</option>
+      <option value="A3">A3 (297x420 mm)</option>
+      <option value="A5">A5 (148x210 mm)</option>
+      <option value="Custom">Libre</option>
+    </select>
 
-    <label>Largeur (mm) :
-      <input type="number" id="manualWidth" value="210">
-    </label>
+    <label for="orientation">Orientation :</label>
+    <select id="orientation">
+      <option value="portrait" selected>Portrait</option>
+      <option value="landscape">Paysage</option>
+    </select>
 
-    <label>Hauteur (mm) :
-      <input type="number" id="manualHeight" value="297">
-    </label>
+    <label for="manualWidth">Largeur (mm) :</label>
+    <input type="number" id="manualWidth" value="210">
 
-    <label>Unités :
-      <select id="unit">
-        <option value="mm" selected>Millimètres</option>
-        <option value="px">Pixels</option>
-      </select>
-    </label>
+    <label for="manualHeight">Hauteur (mm) :</label>
+    <input type="number" id="manualHeight" value="297">
 
-    <label>Nombre de bandes :
-      <input type="number" id="lines" value="20" min="2" max="200">
-    </label>
+    <label for="unit">Unités :</label>
+    <select id="unit">
+      <option value="mm" selected>Millimètres</option>
+      <option value="px">Pixels</option>
+    </select>
 
-    <label>Format d’export :
-      <select id="exportFormat">
-        <option value="png" selected>PNG</option>
-        <option value="jpeg">JPEG</option>
-        <option value="webp">WebP</option>
-      </select>
-    </label>
+    <label for="lines">Nombre de bandes :</label>
+    <input type="number" id="lines" value="20" min="2" max="200">
+
+    <label for="exportFormat">Format d’export :</label>
+    <select id="exportFormat">
+      <option value="png" selected>PNG</option>
+      <option value="jpeg">JPEG</option>
+      <option value="webp">WebP</option>
+    </select>
 
     <button onclick="download()">Télécharger l’image</button>
   </div>
