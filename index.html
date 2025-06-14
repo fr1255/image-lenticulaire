@@ -68,10 +68,18 @@
           <option value="A5">A5 (148x210 mm)</option>
           <option value="A4" selected>A4 (210x297 mm)</option>
           <option value="A3">A3 (297x420 mm)</option>
-          <option value="Square">Carré (210x210 mm)</option>
+          <option value="Custom">Libre (dimensions manuelles)</option>
         </select>
       </label><br><br>
 
+<div id="manualSizeFields">
+<label>Largeur (mm) :
+  <input type="number" id="manualWidth" value="210">
+</label><br><br>
+<label>Hauteur (mm) :
+  <input type="number" id="manualHeight" value="297">
+</label><br><br>
+</div>
       <label>Orientation :
         <select id="orientation">
           <option value="portrait" selected>Portrait</option>
@@ -90,8 +98,7 @@
         <input type="number" id="lines" min="2" max="200" value="20">
       </label><br><br>
 
-      <button onclick="generate()">Générer</button>
-      <button onclick="download()">Télécharger l’image</button>
+            <button onclick="download()">Télécharger l’image</button>
     </div>
     <div class="right" style="overflow-x: auto;">
       <canvas id="result" width="800" height="600" style="background-color: white; border: 2px solid #333;"></canvas>
@@ -150,9 +157,16 @@
 
       if (format === "A3") { widthMM = 297; heightMM = 420; }
       else if (format === "A5") { widthMM = 148; heightMM = 210; }
-      else if (format === "Square") { widthMM = heightMM = 210; }
+      else if (format === "Custom") {
+        widthMM = parseFloat(document.getElementById("manualWidth").value);
+        heightMM = parseFloat(document.getElementById("manualHeight").value);
+      } else {
+        widthMM = 210; heightMM = 297;
+      }
 
-      if (orientation === "landscape") [widthMM, heightMM] = [heightMM, widthMM];
+      if (orientation === "landscape") {
+        [widthMM, heightMM] = [heightMM, widthMM];
+      }
 
       const width = Math.floor(convertToPx(widthMM, unit));
       const height = Math.floor(convertToPx(heightMM, unit));
@@ -182,6 +196,35 @@
       link.href = canvas.toDataURL();
       link.click();
     }
-  </script>
+  
+    function toggleManualFields() {
+      const format = document.getElementById("format").value;
+      const manualFields = document.getElementById("manualSizeFields");
+      manualFields.style.display = format === "Custom" ? "block" : "none";
+    }
+
+    document.getElementById("format").addEventListener("change", toggleManualFields);
+    window.addEventListener("DOMContentLoaded", toggleManualFields);
+
+
+    function setupAutoGenerate() {
+      const inputs = [
+        "format", "orientation", "unit", "lines",
+        "manualWidth", "manualHeight"
+      ];
+      for (const id of inputs) {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener("change", () => {
+            // On attend un peu pour laisser l'UI se mettre à jour
+            setTimeout(generate, 100);
+          });
+        }
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", setupAutoGenerate);
+
+</script>
 </body>
 </html>
