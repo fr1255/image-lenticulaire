@@ -2,84 +2,37 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <!-- PWA Support -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#000000">
-  <link rel="icon" href="favicon_lenticulaire.ico" type="image/x-icon">
-
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Générateur d’image lenticulaire</title>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Image Lenticulaire">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Simpleicons_Interface_user-image.svg/1024px-Simpleicons_Interface_user-image.svg.png">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #ddd;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      font-size: 2em;
-      font-weight: bold;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .container {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .left, .right {
-      flex: 1 1 45%;
-    }
-    canvas {
-      min-height: 200px;
-      min-width: 200px;
-      display: block;
-      margin: 0 auto;
-      max-width: 100%;
-      height: auto;
-      background-color: white;
-      border: 1px solid #444;
-    }
+    body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+    .container { display: flex; gap: 20px; }
+    .left, .right { flex: 1; }
+    canvas { background: white; border: 1px solid #333; display: block; margin-top: 20px; width: 100%; }
   </style>
 </head>
 <body>
   <h1>Générateur d’image lenticulaire</h1>
-  <p style="text-align:right; font-style:italic;">Auteur : René Hippert</p>
 
   <div class="container">
     <div class="left">
-      <p><strong>Projet autoportrait (parcours en Y)</strong></p>
-      <p>Sélectionne deux images de même taille avec le même cadrage.</p>
-      <label>Télécharger l’image 1 :
-        <input type="file" id="image1" accept="image/*">
+      <label>Image 1 :
+        <input type="file" id="image1" accept=".png,.jpg,.jpeg,.gif,.bmp,.webp">
       </label><br><br>
-      <label>Télécharger l’image 2 :
-        <input type="file" id="image2" accept="image/*">
+
+      <label>Image 2 :
+        <input type="file" id="image2" accept=".png,.jpg,.jpeg,.gif,.bmp,.webp">
       </label><br><br>
 
       <label>Format :
         <select id="format">
-          <option value="A5">A5 (148x210 mm)</option>
           <option value="A4" selected>A4 (210x297 mm)</option>
           <option value="A3">A3 (297x420 mm)</option>
-          <option value="Custom">Libre (dimensions manuelles)</option>
+          <option value="A5">A5 (148x210 mm)</option>
+          <option value="Custom">Libre</option>
         </select>
       </label><br><br>
 
-<div id="manualSizeFields">
-<label>Largeur (mm) :
-  <input type="number" id="manualWidth" value="210">
-</label><br><br>
-<label>Hauteur (mm) :
-  <input type="number" id="manualHeight" value="297">
-</label><br><br>
-</div>
       <label>Orientation :
         <select id="orientation">
           <option value="portrait" selected>Portrait</option>
@@ -87,41 +40,47 @@
         </select>
       </label><br><br>
 
+      <label>Largeur (mm) :
+        <input type="number" id="manualWidth" value="210">
+      </label><br><br>
+
+      <label>Hauteur (mm) :
+        <input type="number" id="manualHeight" value="297">
+      </label><br><br>
+
       <label>Unités :
         <select id="unit">
-          <option value="mm" selected>Millimètres (mm)</option>
-          <option value="px">Pixels (px)</option>
+          <option value="mm" selected>Millimètres</option>
+          <option value="px">Pixels</option>
         </select>
       </label><br><br>
 
       <label>Nombre de bandes :
-        <input type="number" id="lines" min="2" max="200" value="20">
+        <input type="number" id="lines" value="20" min="2" max="200">
       </label><br><br>
 
-            <button onclick="download()">Télécharger l’image</button>
+      <label>Format d’export :
+        <select id="exportFormat">
+          <option value="png" selected>PNG</option>
+          <option value="jpeg">JPEG</option>
+          <option value="webp">WebP</option>
+        </select>
+      </label><br><br>
+
+      <button onclick="download()">Télécharger l’image</button>
     </div>
-    <div class="right" style="overflow-x: auto;">
-      <canvas id="result" width="800" height="600" style="background-color: white; border: 2px solid #333;"></canvas>
+
+    <div class="right">
+      <canvas id="result" width="800" height="600"></canvas>
     </div>
   </div>
 
   <script>
-    let img1 = null;
-    let img2 = null;
+    let img1 = null, img2 = null;
 
-    document.getElementById('image1').addEventListener('change', function(e) {
-      loadImage(e.target.files[0], function(img) {
-        img1 = img;
-        draw();
-      });
-    });
-
-    document.getElementById('image2').addEventListener('change', function(e) {
-      loadImage(e.target.files[0], function(img) {
-        img2 = img;
-        draw();
-      });
-    });
+    function convertToPx(value, unit) {
+      return unit === "mm" ? value * 3.7795275591 : value;
+    }
 
     function loadImage(file, callback) {
       const reader = new FileReader();
@@ -135,19 +94,11 @@
       reader.readAsDataURL(file);
     }
 
-    function convertToPx(value, unit) {
-      return unit === 'mm' ? value * 3.7795275591 : value;
+    function draw() {
+      if (img1 && img2) generate();
     }
 
     function generate() {
-      if (!img1 || !img2) {
-        alert("Veuillez d'abord sélectionner les deux images.");
-        return;
-      }
-
-      const canvas = document.getElementById("result");
-      const ctx = canvas.getContext("2d");
-
       const format = document.getElementById("format").value;
       const orientation = document.getElementById("orientation").value;
       const unit = document.getElementById("unit").value;
@@ -160,17 +111,17 @@
       else if (format === "Custom") {
         widthMM = parseFloat(document.getElementById("manualWidth").value);
         heightMM = parseFloat(document.getElementById("manualHeight").value);
-      } else {
-        widthMM = 210; heightMM = 297;
       }
 
       if (orientation === "landscape") {
         [widthMM, heightMM] = [heightMM, widthMM];
       }
 
+      const canvas = document.getElementById("result");
+      const ctx = canvas.getContext("2d");
+
       const width = Math.floor(convertToPx(widthMM, unit));
       const height = Math.floor(convertToPx(heightMM, unit));
-
       canvas.width = width;
       canvas.height = height;
 
@@ -185,46 +136,35 @@
       }
     }
 
-    function draw() {
-      if (img1 && img2) generate();
-    }
-
     function download() {
       const canvas = document.getElementById("result");
+      const format = document.getElementById("exportFormat").value;
       const link = document.createElement("a");
-      link.download = "image_lenticulaire.png";
-      link.href = canvas.toDataURL();
+      link.download = "image_lenticulaire." + format;
+      link.href = canvas.toDataURL("image/" + format);
       link.click();
     }
-  
-    function toggleManualFields() {
-      const format = document.getElementById("format").value;
-      const manualFields = document.getElementById("manualSizeFields");
-      manualFields.style.display = format === "Custom" ? "block" : "none";
-    }
 
-    document.getElementById("format").addEventListener("change", toggleManualFields);
-    window.addEventListener("DOMContentLoaded", toggleManualFields);
+    document.getElementById("image1").addEventListener("change", function(e) {
+      loadImage(e.target.files[0], function(img) {
+        img1 = img;
+        draw();
+      });
+    });
 
+    document.getElementById("image2").addEventListener("change", function(e) {
+      loadImage(e.target.files[0], function(img) {
+        img2 = img;
+        draw();
+      });
+    });
 
-    function setupAutoGenerate() {
-      const inputs = [
-        "format", "orientation", "unit", "lines",
-        "manualWidth", "manualHeight"
-      ];
-      for (const id of inputs) {
-        const el = document.getElementById(id);
-        if (el) {
-          el.addEventListener("change", () => {
-            // On attend un peu pour laisser l'UI se mettre à jour
-            setTimeout(generate, 100);
-          });
-        }
-      }
-    }
-
-    window.addEventListener("DOMContentLoaded", setupAutoGenerate);
-
-</script>
+    const autoFields = ["format", "orientation", "unit", "lines", "manualWidth", "manualHeight"];
+    autoFields.forEach(id => {
+      document.getElementById(id).addEventListener("change", () => {
+        setTimeout(generate, 100);
+      });
+    });
+  </script>
 </body>
 </html>
